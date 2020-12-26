@@ -42,16 +42,16 @@ The module supports BPSK and QPSK modulation schemes. The \code{labels} property
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{FIR Decimator/Interpolator}
 
-To understand the decimation and interpolation processes, it's fundamental to grasp the concept of impulse-train sampling which simply means that samples of a discrete-time sequence $x(n)$ can be obtained by multiplying $x(n)$ by the discrete-time impulse train
+To understand the decimation and interpolation processes, it's fundamental to grasp the concept of impulse-train sampling which simply means that samples of a discrete-time sequence $x(n)$ can be obtained by multiplying $x(n)$ by the sum of discrete-time impulse train positioned at the sampling instants $kN$, given by
 \begin{align}
-  p(n)=\sum_{n=-\infty}^{\infty}\delta(n-kN)
+  p(n)=\sum_{k=-\infty}^{\infty}\delta(n-kN)
 \end{align}
 with DTFT
 \begin{align}
   P(e^{j\Omega})=\frac{2\pi}{N}\sum_{k=-\infty}^{\infty}\delta\left(\Omega-k\frac{2\pi}{N}\right)
 \end{align}
 
-The desired sampled sequence may be expressed as the product of the original sequence $x(n)$ and the impulse train $p(n)$:
+The desired sampled sequence is then:
 \begin{align} \label{eq:x_pn}
   x_p(n) = x(n)p(n)
 \end{align}
@@ -97,7 +97,7 @@ The two sequences are related by
   x_D(m)=x(mN)
 \end{equation}
 
-Noting that because only the $N$-th sample of $x(n)$ is of interest, $x_p(n)$, given by \eqref{eq:x_pn}, could also be downsampled (at the proper starting point) to obtain the same sequence $x_D(m)$. The DTFT of $x_D(m)$ is then obtained as follows:
+Because only the $N$-th sample of $x(n)$ is of interest, $x_p(n)$, as given by \eqref{eq:x_pn}, could also be downsampled (at the proper starting point) to obtain the same sequence $x_D(m)$. The DTFT of $x_D(m)$ is then obtained as follows:
 \begin{equation}
   X_D(e^{j\Omega}) = \sum_{m=-\infty}^{\infty} x_d(m)e^{-j\Omega m} = \sum_{m=-\infty}^{\infty} x_p(mN)e^{-j\Omega m}
 \end{equation}
@@ -232,7 +232,7 @@ The \code{FrequencySync} module compensates for carrier frequency and phase offs
 
 \subsection{Phase-locked Loop Introduction}
 \label{sect:pll_intro}
-The module is a closed loop synchronizer that uses the discrete phase-locked loop (PLL) based algorithm described in \cite{digcomm_discrete_approach}. PLLs are used in digital communication systems to synchronize the local oscillators in the receiver to the oscillators used in the transmitter (carrier phase synchronization) or to synchronize the data clock in the receiver to the transmitter data clock (symbol timing synchronization). In either case, the PLL can be though as a device that tracks the phase and frequency of a sinusoid. A basic structure of a PLL is shown in \autoref{fig:analog_pll}.
+The module is a closed loop synchronizer that uses the discrete phase-locked loop (PLL) based algorithm described in \cite{digcomm_discrete_approach}. PLLs are often used in digital communications to synchronize local oscillators in the receiver to oscillators used in the transmitter (carrier phase synchronization) or to synchronize the data clock in the receiver to the transmitter data clock (symbol timing synchronization). In either case, the PLL can be though as a device that tracks the phase and frequency of a sinusoid. A basic structure of a PLL is shown in \autoref{fig:analog_pll}.
 
 \begin{figure}[ht]
   \centering
@@ -241,7 +241,7 @@ The module is a closed loop synchronizer that uses the discrete phase-locked loo
   \label{fig:analog_pll}
 \end{figure}
 
-It's also common to produce a \emph{phase equivalent} representation which is obtained writing down the phases of all sinusoids and tracking the operations on those phases through the loop. This structure is illustrated in \autoref{fig:analog_pll_phases}.
+It's also common to produce a \emph{phase equivalent} representation writing down the phases of all sinusoids and tracking the operations on those phases through the PLL. This structure is illustrated in \autoref{fig:analog_pll_phases}.
 
 \begin{figure}[ht]
   \centering
@@ -250,7 +250,7 @@ It's also common to produce a \emph{phase equivalent} representation which is ob
   \label{fig:analog_pll_phases}
 \end{figure}
 
-The system includes 3 basic components: the phase detector, the loop filter and the voltage-controlled oscillator (VCO). The loop input $\theta(t)$ and the VCO output $\hat\theta(t)$ are the inputs to the phase detector, and the difference in phase between these inputs is known as the \emph{phase error} $\theta_e(t)=\theta(t) -\hat\theta(t)$. The output of the phase detector is a function of this phase error $g(\theta_e)$. This, in turn, is filtered by the loop filter to produce an input to the VCO which controls its output phase. When functioning correctly, the loop adjusts the control voltage $v(t)$ to produce a phase estimate $\hat\theta(t)$ that drives the phase error to zero. Too see why this is so, \autoref{fig:s-curve} shows the plot of the phase detector output $g(\theta_e(t)$. When the phase error is positive, $\theta(t) > \hat \theta(t)$, which means the phase of the VCO output lags the loop input and must be increased. The phase error produces a control input voltage $v(t)$ on the VCO, which in turn increases its output phase, producing the desired results. Likewise when the phase error is negative, $\theta(t) < \hat \theta(t)$, a negative control voltage is produced and the VCO decreases its output phase.
+The system is composed of three blocks: the phase detector, the loop filter and the voltage-controlled oscillator (VCO). The loop input $\theta(t)$ and the VCO output $\hat\theta(t)$ are the inputs to the phase detector, and the difference in phase between these inputs is known as the \emph{phase error} $\theta_e(t)=\theta(t) -\hat\theta(t)$. The output of the phase detector is a function of this phase error $g(\theta_e)$. This, in turn, is filtered by the loop filter to produce an input to the VCO which controls its output phase. When functioning correctly, the loop adjusts the control voltage $v(t)$ to produce a phase estimate $\hat\theta(t)$ that drives the phase error to zero. \autoref{fig:s-curve} shows the plot of the phase detector output $g(\theta_e(t)$. When the phase error is positive, $\theta(t) > \hat \theta(t)$, which means the phase of the VCO output lags the loop input and must be increased. The phase error produces a control input voltage $v(t)$ on the VCO, which in turn increases its output phase, producing the desired results. When the phase error is negative, $\theta(t) < \hat \theta(t)$, a negative control voltage is produced and the VCO decreases its output phase.
 
 \begin{figure}[ht]
   \centering
@@ -259,9 +259,9 @@ The system includes 3 basic components: the phase detector, the loop filter and 
   \label{fig:s-curve}
 \end{figure}
 
-To derive the system parameters the analysis will start with an analogue PLL structure and then obtain the equivalent parameters in the digital domain.
+To derive the system parameters we can start with an analogue PLL structure and then obtain the equivalent parameters in the digital domain.
 
-The phase detector is, in general, a non-linear function. A common method of analysing these systems is to linearize them around a desired operation point. In this case $\theta_e=0$ is the operation point, and the linear approximation is obtained by considering that $g(\theta_e)\approx k_p \theta_e$, for small $\theta_e$. In this situation, the phase equivalent diagram can be analysed using frequency domain techniques (Laplace or Z transforms) to extract the parameters that characterize the properties and performance of the system. \autoref{fig:analog_pll_linear} shows the linearized system in the time and frequency domains.
+Given that the phase detector can be a non-linear function, a common method of analysing these systems is to linearize them around a desired operation point (in this case $\theta_e=0$). The linear approximation is obtained by considering that $g(\theta_e)\approx k_p \theta_e$, for small $\theta_e$. Having a linear system, the phase equivalent diagram can now be analysed using frequency domain techniques (Laplace or Z transforms) to extract the parameters that characterize the properties and performance of the system. \autoref{fig:analog_pll_linear} shows the linearized system in the time and frequency domains.
 
 \begin{figure}[ht]
   \centering
@@ -270,7 +270,7 @@ The phase detector is, in general, a non-linear function. A common method of ana
   \label{fig:analog_pll_linear}
 \end{figure}
 
-To determine the desired characteristics of the loop, the \emph{phase error response} is analysed with two particular input signals: the phase step input (corresponding to a constant phase offset: $\theta(t) = \Delta\theta\cdot u(t)$) and the phase ramp input (corresponding to a constant frequency offset: $\theta(t) = (\Delta \omega)t\cdot u(t)$). The transfer function for the phase error detector is
+Two particular input signals (the phase step input (corresponding to a constant phase offset: $\theta(t) = \Delta\theta\cdot u(t)$) and the phase ramp input (corresponding to a constant frequency offset: $\theta(t) = (\Delta \omega)t\cdot u(t)$)) are used to analyse the \emph{phase error response}. The transfer function for the phase error detector is
 \begin{equation}
   G(s)=\frac{\Theta_e(s)}{\Theta(s)}=\frac{s}{s+k_0 k_p F(s)}
 \end{equation}
@@ -287,7 +287,7 @@ applying the final value theorem one extracts the conditions on the loop filter:
 \theta_{e,ramp}(\infty) & =\lim_{s\to 0}\left(s\cdot\Theta_{e,ramp}(s)\right)=0\text{, if }F(0)=\infty
 \end{align}
 
-It can be seen that to force the phase error $\theta_e$ to 0, the loop must have a non-zero DC gain (condition imposed by the step response), and an infinite DC gain (condition imposed by the ramp response). A \emph{proportional-plus-integrator} is such as filter. Turns out that while it's difficult to implement an infinite DC gain integrator in the analogue domain, it will be straightforward in the digital domain and so this is the chosen structure for the loop filter:
+It can be seen that to force the phase error $\theta_e$ to 0, the loop must have a non-zero DC gain (condition imposed by the step response), and an infinite DC gain (condition imposed by the ramp response). A \emph{proportional-plus-integrator} has these properties. Notice that while it's difficult to implement an infinite DC gain integrator in the analogue domain, it is straightforward in the digital domain and so this is the chosen structure for the loop filter:
 \begin{equation}F(s)=k_1+\frac{k_2}{s}\end{equation}
 
 To extract the loop performance in turn, the \emph{output response} is analysed:
@@ -296,7 +296,7 @@ To extract the loop performance in turn, the \emph{output response} is analysed:
 With $F(s)$ as a proportional-plus-integrator loop filter, this becomes
 \begin{equation}H_a(s)=\frac{\hat\Theta(s)}{\Theta(s)}=\frac{k_0 k_p k_1 s + k_0 k_p k_2}{s^2+k_0 k_p k_1 s + k_0 k_p k_2}\end{equation}
 
-This is a second order system (it has two poles, one originating from the loop filter and the other from the VCO) which can be expressed in the familiar form
+This is a second order system (it has two poles, one originating from the loop filter and the other from the VCO) and so it can be expressed in the familiar form
 \begin{equation} \label{eq:Ha_s}
   H_a(s)=\frac{2\zeta \omega_n s+\omega_n^2}{s^2+2\zeta \omega_n s+\omega_n^2}
 \end{equation}
@@ -307,13 +307,13 @@ where
 \end{align}
 are the \emph{damping factor} and \emph{natural frequency} of the system.
 
-Instead of $\omega_n$, it's common to specify the 3-dB bandwidth of the PLL $\omega_{3dB}$, obtained by setting $|H_a(j\omega)|^2=\frac{1}{2}$ and solving for $\omega$. In this case
+Sometimes it's common to specify the 3-dB bandwidth of the PLL $\omega_{3dB}$, obtained by setting $|H_a(j\omega)|^2=\frac{1}{2}$ and solving for $\omega$. In this case
 \begin{equation}\omega_{3dB}=\omega_n \sqrt{1+2\zeta^2+\sqrt{(1+2\zeta^2)^2+1}}\end{equation}
 
-While a familiar concept, $\omega_{3dB}$ is not very useful as a measure of the bandwidth of a PLL, so an alternative parameter is $B_n$, the \emph{equivalent noise bandwidth}, defined as the bandwidth of a fictitious rectangular low-pass filter with the same area as $|H_a(j\omega)|^2$. With a proportional-plus-integrator filter, this turns out to be
+While this maybe a familiar concept, $\omega_{3dB}$ is not very useful as a measure of the bandwidth of a PLL, so an alternative parameter is $B_n$, the \emph{equivalent noise bandwidth}, defined as the bandwidth of a fictitious rectangular low-pass filter with the same area as $|H_a(j\omega)|^2$. With a proportional-plus-integrator filter, this turns out to be
 \begin{equation}B_n=\frac{\omega_n}{2}\left(\zeta+\frac{1}{4\zeta}\right)\end{equation}
 
-With equations for $\zeta$, $\omega_n$ and $B_n$, it's possible, in alternative, to obtain expressions for the loop constants:
+With equations for $\zeta$, $\omega_n$ and $B_n$, it's possible, in turn, to obtain expressions for the loop constants:
 \begin{align}
 k_p k_0 k_1 &= \frac{4\zeta B_n}{\zeta+\frac{1}{4\zeta}}\\
 k_p k_0 k_2 &= \frac{4 B_n^2}{\left(\zeta+\frac{1}{4\zeta}\right)^2}
@@ -373,14 +373,14 @@ which, when, as often is the case, $B_nT\ll1$, can be approximated as
 Note that, in this approximation, where the sample rate is large relative to the equivalent loop bandwidth, the discrete-time expressions are the same as those for the continuous-time loop case, except that the loop bandwidth is normalized by the sample rate (or the symbol rate).
 
 \subsection{PLL design for PSK carrier frequency synchronization}
-Up until this point, the structure of a general discrete-time PLL has been derived, with the exception of the phase error detector, which has been assumed only to be linear, more specifically $g(\theta_e)=K_p\theta_e$. Unfortunately this general case does not work for PSK modulations. If this PLL was applied to the input signal it would try to track the carrier phase error as well as the phase offsets introduced by the modulation itself. Thus the PLL must \emph{remove} the modulation phase shifts and track only the remaining phase. The \emph{maximum likelihood} (ML) phase error detector is chosen instead, which consists of minimizing the energy in $\theta_e$. It also has the advantage of avoiding arctangent operations required by other phase detectors based on a purely geometric approach. \autoref{fig:complete_digital_pll} shows the complete discrete-time PLL (for QPSK modulation case) with the proposed ML phase error detector.
+Up until this point, the structure of a general discrete-time PLL has been derived, with the exception of the phase error detector, which has been assumed only to be linear, more specifically $g(\theta_e)=K_p\theta_e$. Unfortunately this general case does not work for the specific case of PSK modulations because if this PLL was applied to the input signal it would try to track both the carrier phase error and the phase offsets introduced by the modulation itself. Thus the PLL must \emph{remove} the modulation phase shifts and track only the remaining phase. The \emph{maximum likelihood} (ML) phase error detector is chosen instead, which consists of minimizing the energy in $\theta_e$. It also has the advantage of avoiding arctangent operations required by other phase detectors based on a purely geometric approach. \autoref{fig:complete_digital_pll} shows the complete discrete-time PLL (for QPSK modulation case) with the proposed ML phase error detector.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=\textwidth]{drawing}
   \caption{Block diagram for the QPSK carrier phase PLL using an error signal based on the ML phase error detector}
   \label{fig:complete_digital_pll}
 \end{figure}
-The ML phase detector first de-rotates the input signal by the estimated phase from the DDS output (CCW rotation block). This leads to the phase of the received data symbol $\theta_r = \theta-\hat\theta$. It then subtracts the phase of the transmitted data symbol to obtain the phase error, $\theta_e=\theta_r-\theta_d$. This is usually used in a \emph{data-aided} system, in which there is a training sequence where the transmission symbols are well known. If the symbols are unknown then it is called a \emph{decision-directed} system and the transmitted symbols must be estimated. In that case, $\theta_e$ is more accurately denoted by $\theta_e=\theta_r-\hat\theta_d$. The latter is the situation in this case. It can be shown \cite{digcomm_discrete_approach} that the ML phase detector response is given by
+The ML phase detector first de-rotates the input signal by the estimated phase from the DDS output (CCW rotation block). This leaves only the phase of the received data symbol $\theta_r = \theta-\hat\theta$. It then subtracts the phase of the transmitted data symbol to obtain the phase error, $\theta_e=\theta_r-\theta_d$. This is usually used in a \emph{data-aided} system, in which there is a training sequence where the transmission symbols are well known. If the symbols are unknown then it is called a \emph{decision-directed} system and the transmitted symbols must be estimated. In that case, $\theta_e$ is more accurately denoted by $\theta_e=\theta_r-\hat\theta_d$. The latter is the situation in this case. It can be shown \cite{digcomm_discrete_approach} that the ML phase detector response is given by
 \begin{align}
   e(k)=y'(kT_s)\hat a_0(k)-x(kT_s)'\hat a_1(k)
 \end{align}
@@ -438,16 +438,16 @@ and
   \label{fig:s_curve_bpsk}
 \end{figure}
 
-Note the detector gain is dependent on the input sinal amplitude $K$, which imposes restrictions on its value. For this reason, it's common to pass the input signal through a block such as an AGC, that adjusts the amplitude to the required value. Also note that the decision-directed QPSK case has 4 stable lock points (crosses zero with a positive slope), resulting in a $\frac{\pi}{2}$ phase ambiguity:
+Note the detector gain is dependent on the input sinal amplitude $K$ and so it's common to pass the input signal through a block such as an AGC, that adjusts the amplitude to the required value. Also note that the decision-directed QPSK case has 4 stable lock points (crosses zero with a positive slope), resulting in a $\frac{\pi}{2}$ phase ambiguity:
 \begin{equation}
   \theta_e=-\frac{\pi}{2},0,\frac{\pi}{2},\pi
 \end{equation}
 
 Similarly, the BPSK case has 2 stable lock points ($\theta_e=0,\pi$), resulting in a $\pi$ phase ambiguity.
 
-As for the remaining parameters, the damping factor $\zeta$ and the normalized loop bandwidth $B_nT$ are chosen by the designer in order to obtain the desired performance. $K_0$, the DDS sensitivity, is usually taken to be 1. the remaining parameters $K_1$ and $K_2$ can be calculated given the two expressions previously given for the loop constants in \eqref{eq:digital_loop_constants1} and \eqref{eq:digital_loop_constants2}.
+As for the remaining parameters, the damping factor $\zeta$ and the normalized loop bandwidth $B_nT$ are usually chosen by the designer to obtain the desired performance (a critically damped system is a popular choice). $K_0$, the DDS sensitivity, is usually taken to be 1. the remaining parameters $K_1$ and $K_2$ can be calculated given the two expressions previously given for the loop constants in \eqref{eq:digital_loop_constants1} and \eqref{eq:digital_loop_constants2}.
 
-To conclude, an example of loop design with the ML detector is provided. Suppose the requirements call for a QPSK modulation, an equivalent loop bandwidth of 2\% of the symbol rate ($B_n=0.02$) and a damping factor $\zeta=\frac{1}{\sqrt{2}}$. Assume for simplicity that $KA^2=1$ and also $K_0=1$. In this case, the proportional-plus-integrator loop filter constants are $K_1=2.6\times10^{-2}$ and $K_2=6.9\times10^{-4}$.
+To conclude, an example of loop design with the ML detector is shown. Suppose the requirements specify QPSK modulation, an equivalent loop bandwidth of 2\% of the symbol rate ($B_n=0.02$) and a damping factor $\zeta=\frac{1}{\sqrt{2}}$. Assume for simplicity that $KA^2=1$ and also $K_0=1$. In this case, the proportional-plus-integrator loop filter constants are $K_1=2.6\times10^{-2}$ and $K_2=6.9\times10^{-4}$.
 
 \autoref{fig:demo_fsync} show a Jupyter notebook example using the \code{FrequencySync} module to synchronize a QPSK signal embedded in AWGN noise and with an introduced phase and frequency offset.
 
@@ -473,7 +473,7 @@ The \code{SymbolSync} module corrects symbol timing clock skew between a single-
   \item \code{A}: Symbol magnitude
 \end{itemize}
 
-Conceptually symbol timing synchronization is the process of estimating a clock signal that is aligned in phase and frequency with the clock used to generate the data sequence at the transmitter. Since it's not efficient to allocate spectrum to transmit a separate clock signal, it must be extracted from the noisy received waveforms that carry the data. For matched filter detectors, this estimate is used to identify the instants when the matched filter output should be sampled. \autoref{fig:drawing_sym2} shows the structure of the symbol timing synchronizer.
+Symbol timing synchronization consists of estimating a clock signal that is aligned in phase and frequency with the clock used to generate the data sequence at the transmitter. The clock is extracted from the (possibly noisy) received waveforms that carry the data and this estimate is used to identify the instants when the matched filter output should be sampled. \autoref{fig:drawing_sym2} shows the structure of the symbol timing synchronizer.
 
 \begin{figure}[H]
   \centering
@@ -482,7 +482,7 @@ Conceptually symbol timing synchronization is the process of estimating a clock 
   \label{fig:drawing_sym2}
 \end{figure}
 
-The algorithm is based on a discrete-time PLL algorithm, which consists of four components:
+The algorithm is based on a discrete-time PLL algorithm, which consists of four components \cite{digcomm_discrete_approach}:
 \begin{itemize}
   \item A timing error detector (TED)
   \item An interpolator
@@ -490,9 +490,9 @@ The algorithm is based on a discrete-time PLL algorithm, which consists of four 
   \item A loop filter
 \end{itemize}
 
-Cast in terms of a discrete-time PLL structure, the interpolator and TED combination plays the role of the phase detector, and the interpolator control plays the role of the DDS. For more information, refer to \autoref{sect:library_freq_sync}, where an in-depth explanation of discrete-time PLL workings and parameters is presented.
+In terms of a discrete-time PLL structure, the interpolator and TED combination are the phase detector, and the interpolator control is the DDS. For more information, refer to \autoref{sect:library_freq_sync}, where an in-depth explanation of discrete-time PLL workings and parameters is presented.
 
-Having a purely discrete-time architecture solves many of the problems associated with the continuous-time or hybrid approaches, such as phase noise on the voltage controlled clock (VCC) that drives the ADC. This however means that the ADC is not part of the loop and so the received signal $r(t)$ is sampled at a fixed rate $\frac{1}{T}$, that is asynchronous to the symbol rate $\frac{1}{T_s}$. As a consequence this approach produces samples which are not aligned with the symbol boundaries. The role of the symbol timing synchronization is to `move' the samples to the desired time instants. Another name for `moving' samples in time is \emph{interpolation}. Because the synchronizer has to adapt to an unknown time delay, the interpolator needs to be adaptive. When working correctly, the interpolator produces matched filter outputs which are aligned with the symbols boundaries and the optimum sampling instant.
+Having a purely discrete-time architecture solves many of the problems associated with the continuous-time or hybrid approaches, such as phase noise on the voltage controlled clock (VCC) that drives the ADC. This however means that the ADC is not part of the loop and so the received signal $r(t)$ is sampled at a fixed rate $\frac{1}{T}$, that is asynchronous to the symbol rate $\frac{1}{T_s}$. As a consequence, this approach produces samples which are not aligned with the symbol boundaries. The role of the symbol timing synchronization is to `move' the samples to the desired time instants. Another name for `moving' samples in time is \emph{interpolation}. Because the synchronizer has to adapt to an unknown time delay, the interpolator needs to be adaptive. When working correctly, the interpolator produces matched filter outputs which are aligned with the symbols boundaries and the optimum sampling instant.
 
 \subsection{Timing Error Detector}
 \label{sect:timing_error_detector}
@@ -504,7 +504,7 @@ x(kT_s+\hat\tau) = K\sum_{m} a(m)r_p\left(\left(k-m\right)T_s-\tau_e\right)
 
 where $\tau_e=\tau-\hat\tau$ is the timing error, $r_p$ is the autocorrelation function of the pulse shaping filter and $T_s$ is symbol period. The TED then produces a signal $g(\tau_e)$ that is a function of this timing error, in the same way the phase detector in a carrier frequency synchronizer produces a signal that is a function of the phase error. The characteristics of a TED, similarly to a phase error detector (PED), are described by its S-curve.
 
-There are several TEDs in the literature and for this module the \emph{zero crossing TED} (ZCTED) has been chosen. It's a \emph{decision-directed} TED that offers similar performance to other alternatives, such as the \emph{maximum likelihood} TED (MLTED) and the \emph{early-late} TED (ELTED), but it is less susceptible to self-noise. This detector is based on finding the zero crossings in the eye diagram as opposed to the MLTED and ELTED which rely on the slope of the eye diagram. It operates at 2 samples/second and provides zero error when every other sample is time-aligned with a zero crossing in the matched filter output (the other samples are time-aligned with the optimum sampling instants corresponding to maximum average eye opening). \autoref{fig:zero_crossing_detector} illustrates the operation of the ZCTED.
+There are several TEDs in the literature and for this module the \emph{zero crossing TED} (ZCTED) has been chosen. It's a \emph{decision-directed} TED that offers similar performance to other alternatives, such as the \emph{maximum likelihood} TED (MLTED) and the \emph{early-late} TED (ELTED), but it is less susceptible to self-noise. This detector is based on finding the zero crossings in the eye diagram as opposed to the MLTED and ELTED which rely on the slope of the eye diagram. It operates at 2 samples/second and provides zero error when every other sample is time-aligned with a zero crossing in the matched filter output (the other samples are then time-aligned with the optimum sampling instants corresponding to maximum average eye opening). \autoref{fig:zero_crossing_detector} illustrates the operation of the ZCTED.
 
 \begin{figure}[ht]
   \centering
@@ -529,7 +529,7 @@ An alternative is to use
 \hat a(k)   &= \operatorname{sgn}\left(x\left(\left(k\right)T_s + \hat\tau\right)\right)
 \end{align}
 
-The approximation provides the proper sign but not the proper amplitude for the estimation. In most applications, the incorrect amplitude does not appear to impact performance in any significant way.
+This approximation provides the proper sign but not the proper amplitude for the estimation. This, however, does not appear to impact performance in any significant way.
 
 The S-curve for the ZCTED can be obtained computing the expected value of $e(k)$ and assuming the symbols are uncorrelated. This can be shown to be
 \begin{equation}
@@ -549,7 +549,7 @@ The fundamental interpolation equation may be derived by considering a fictitiou
   \label{fig:interpolation_dac}
 \end{figure}
 
-The input samples $x(nT)$ are converted to a weighted impulse train by the DAC. This impulse train is then filtered by an interpolation filter with impulse response $h_I(t)$ to produce the continuous time signal $x(t)$. Finally, to produce the desired samples, $x(t)$ is resampled at intervals $kT_I$ ($k=0,1,\ldots)$:
+First the input samples $x(nT)$ are converted to a weighted impulse train by the DAC. This impulse train is then filtered by an interpolation filter with impulse response $h_I(t)$ to produce the continuous time signal $x(t)$. Finally, to produce the desired samples, $x(t)$ is resampled at intervals $kT_I$ ($k=0,1,\ldots)$:
 \begin{equation}
 x(kT_I)=\sum_{n} x(nT)h_I(kT_I-nT)
 \end{equation}
@@ -573,7 +573,7 @@ The optimum interpolation filter is an ideal low-pass filter with impulse respon
 h_I(t)=\frac{\sin(\pi t/T)}{\pi t/T}
 \end{equation}
 
-Since this is unrealizable, one choice would be to massively upsample the matched filter input, match filter at the high sample rate and then downsample the output with the appropiately chosen sample offset. This is often denoted by a \emph{polyphase filterbank interpolator}. This technique is out of scope for this thesis and so will not be discussed. Another popular alternative is a class of FIR filters which approximate the ideal response, known as \emph{piecewise polynomial filters}. First, the underlying continuous waveform $x(t)$ is approximated by a polynomial in $t$:
+Since this is unrealizable, one choice would be to massively upsample the matched filter input, match filter at the high sample rate and then downsample the output with the appropriately chosen sample offset. This is often denoted by a \emph{polyphase filterbank interpolator}. This technique is out of scope for this thesis and so will not be discussed. Another popular alternative is a class of FIR filters which approximate the ideal response, known as \emph{piecewise polynomial filters}. First, the underlying continuous waveform $x(t)$ is approximated by a polynomial in $t$:
 \begin{equation}
 x(t)\approx c_pt^p+c_{p-1}t^{p-1}+\ldots+c_1t+c_0
 \end{equation}
@@ -608,9 +608,9 @@ Solving for $c_0$ and $c_1$ gives
 \begin{equation}
 x((m(k)+\mu(k))T) = \mu(k)x((m(k)+1)T)+(1-\mu(k))x(m(k)T)
 \end{equation}
-which the familiar linear interpolator.
+which the linear interpolator.
 
-Four observations are important:
+There are four important observations:
 \begin{enumerate}
   \item The interpolant is a linear combination of the available samples. As a consequence, it can thought of the output of an equivalent filter with coefficients
   \begin{equation}
@@ -738,7 +738,7 @@ The AGC module adaptively adjusts its gain to achieve a constant output power.
   \item \code{avg\_len} (samples): Length of moving average filter
 \end{itemize}
 
-The module doesn't use a linear loop scheme since that has a significant drawback: The time constant of the loop is input signal level dependent, and is different depending on whether the input signal is increasing or decreasing. These properties drastically reduce the control over the system's time constant. To solve this problem, a logarithmic loop is adopted. This allows complete control of the AGC's time constant, increases its dynamic range and generally provides good performance for a variety of signal types. \autoref{fig:agc_diagram} shows a block diagram of the algorithm.
+The module doesn't use a linear loop scheme since that has a significant drawback: The time constant of the loop is input signal level dependent, and is different depending on whether the input signal is increasing or decreasing. These properties drastically reduce the control over the system's time constant. To solve this problem, a logarithmic loop is adopted. This allows control of the AGC's time constant, increases its dynamic range and generally provides good performance for a variety of signal types. \autoref{fig:agc_diagram} shows a block diagram of the algorithm.
 
 % \begin{figure}[ht]
 % \centering
@@ -852,17 +852,7 @@ The detector function $D(\ldots)$, as mentioned, is implemented as a moving aver
 \begin{equation}D(n)=\frac{1}{N}\sum_{m=0}^{N-1}|x(n-m)|^2\end{equation}
 where $N$ is the number of samples to average, given by \code{avg\_len}.
 
-\subsection{AGC Performance Criteria}
-
-\begin{itemize}
-  \item Attack time: The duration it takes the AGC to respond to an increase in the input amplitude.
-  \item Decay time: The duration it takes the AGC to respond to a decrease in the input amplitude.
-  \item Gain pumping: The variation in the gain value during steady-state operation.
-\end{itemize}
-
-For the logarithmic AGC scheme, the feedback loop's time constant is dependent solely on $K$ and independent of the input signal level. Increasing the step size decreases the attack time and decay times, but it also increases gain pumping.
-
-\autoref{fig:demo_agc_interface} shows the Jupyter interface developed for this demonstration, using \emph{ipywidgets}. \autoref{fig:demo_agc} shows the results where it is visible that the output signal power converges to the specified value, while the error signal converges to zero.
+\autoref{fig:demo_agc_interface} shows the Jupyter interface developed for this demonstration. \autoref{fig:demo_agc} shows the results where it is visible that the output signal power converges to the specified value, while the error signal converges to zero.
 
 \begin{figure}[H]
   \centering
@@ -1278,8 +1268,8 @@ Descrambled bits: array([
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Forward Error Correcting Algorithms}
-Forward error correction (FEC) is a technique used for controlling errors in data transmission over unreliable or noisy communication channels. The central idea is the sender encodes the message in a redundant way, most often by using an error-correcting code (ECC). The redundancy allows the receiver to detect a limited number of errors that may occur anywhere in the message, and often to correct these errors without re-transmission. FEC gives the receiver the ability to correct errors without needing a reverse channel to request re-transmission of data, but at the cost of a fixed, higher forward channel bandwidth. FEC information is used in many different areas like mass storage (magnetic, optical and solid state/flash based) devices to enable recovery of corrupted data, systems with ECC memory, and in communication systems where the receiver does not have capabilities to request re-transmission or doing so would induce significant latency.
-The maximum proportion of errors or missing bits that can be corrected is determined by the design of the ECC, so different forward error correcting codes are suitable for different conditions. In general, a stronger code induces more redundancy that needs to be transmitted using the available bandwidth, which reduces the effective bit-rate while improving the received effective SNR \cite{sackinger2017} (see also \eqref{eq:esn0}).
+Forward error correction (FEC) is a technique used for detecting and possibly correcting errors in data transmission over unreliable communication channels \cite{wikipedia_fec}. This is achieved by adding redundant information to the message, that is then used by the receiver in the error detection process. FEC allows the receiver correct errors without needing to request re-transmission of data, but at the cost of a higher channel bandwidth. This is specially useful for systems in which re-transmissions are not viable due to latency issues for example.
+The maximum proportion of errors or missing bits that can be corrected is determined by the design of the ECC, so different forward error correcting codes are suitable for different conditions.
 
 \subsection{Hamming(7,4) Code}
 
@@ -1291,7 +1281,7 @@ The Hamming(7,4) was developed in the SKSDR library as way of demonstration and 
   \item \code{ndata}: The number of data bits (currently fixed as 4)
 \end{itemize}
 
-Hamming(7,4) is a linear error-correcting code that encodes four bits of data into seven bits by adding three parity bits. The algorithm can correct any single-bit error, or detect all single-bit and two-bit errors. Hamming codes can be computed in linear algebra terms through matrices because Hamming codes are linear codes. For the purposes of Hamming codes, two Hamming matrices can be defined, the code \emph{generator matrix} G and the \emph{parity-check matrix} H:
+Hamming(7,4) is a linear error-correcting code that encodes four bits of data into seven bits by adding three parity bits \cite{wikipedia_hamming}. The algorithm can correct any single-bit error, or detect all single-bit and two-bit errors. Because Hamming codes are linear codes, they can be computed efficiently using matrices. Two Hamming matrices can be defined, the code \emph{generator matrix} G and the \emph{parity-check matrix} H:
 \begin{equation}
 \mathbf{G^T} := \begin{pmatrix}
   1 & 1 & 0 & 1 \\
@@ -1308,7 +1298,7 @@ Hamming(7,4) is a linear error-correcting code that encodes four bits of data in
  \end{pmatrix}.
 \end{equation}
 
-The parity check matrix for a given code can be derived from its generator matrix (and vice versa). If the generator matrix for an [n,k]-code is in standard form:
+One can be derived from the other. For example, if the generator matrix for an [n,k]-code is in standard form:
 \begin{equation}
   G = \begin{bmatrix} I_k | P \end{bmatrix}
 \end{equation}

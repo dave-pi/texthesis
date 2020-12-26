@@ -4,7 +4,7 @@ This chapter presents the development process and details of the chosen GNU Radi
 \section{GNU Radio, HackRF One and RTL-SDR Overview}
 \label{sect:gnu_radio_hack_rf_one_rtl_sdr_overview}
 
-As previously mentioned, the hardware supporting this thesis is a HackRF One and an RTL-SDR. The HackRF One (shown in \autoref{fig:hackrf_one_detail}) is based on an analogue quadrature system, similar to the one described in \autoref{sect:analogue_quadrature_receiver_architecture}. The IF frequency is tuneable and is in 2.4 GHz industrial, scientific and medica (ISM) band. A high IF allows for a fairly relaxed image rejection filter. At the same it's relatively affordable to source IF mixer and VCO ICs designed to operate in the ISM bands. For critical phase noise and frequency stability (for example GPS applications) it's possible to install an external temperature compensated crystal oscillator (TCXO), which provide down to 0.5 ppm accuracy. Given the open hardware nature of this device, quite a few clones exist on the market. For this project, due to budget restrictions, a device sourced by Banggood was selected (specifically \href{https://pt.banggood.com/HackRF-One-1MHz-6GHz-Radio-Platform-Development-Board-Software-Defined-RTL-SDR-Demoboard-Kit-Dongle-Receiver-Ham-Radio-p-1552853.html}{this one})
+As previously mentioned, the hardware supporting this thesis is a HackRF One and an RTL-SDR. The HackRF One (shown in \autoref{fig:hackrf_one_detail}) is based on an analogue quadrature system, similar to the one described in \autoref{sect:analogue_quadrature_receiver_architecture}. The IF frequency is tuneable and is in 2.4 GHz industrial, scientific and medica (ISM) band. A high IF allows for a fairly relaxed image rejection filter. At the same time, it's relatively affordable to source IF mixer and VCO ICs designed to operate in the ISM bands. For critical phase noise and frequency stability (for example GPS applications) it's possible to install an external temperature compensated crystal oscillator (TCXO), which provide down to 0.5 ppm accuracy. Given the open hardware nature of this device, quite a few clones exist on the market. For this project, due to budget restrictions, a device sourced by Banggood was selected (specifically \href{https://pt.banggood.com/HackRF-One-1MHz-6GHz-Radio-Platform-Development-Board-Software-Defined-RTL-SDR-Demoboard-Kit-Dongle-Receiver-Ham-Radio-p-1552853.html}{this one})
 
 \begin{figure} [ht]
   \begin{subfigure}{.5\textwidth}
@@ -38,7 +38,7 @@ The RTL-SDR's original function is a DVB-T receiver but it was discovered by the
   \label{fig:rtlsdr_detail}
 \end{figure}
 
-The applications are developed using the GNU Radio framework. GNU Radio is a free software development toolkit that provides signal processing blocks to implement software-defined radios and signal processing systems. It can be used with external RF hardware to create software-defined radios, or without hardware in a simulation-like environment. It is widely used in hobbyist, academic, and commercial environments to support both wireless communications research and real world radio systems. The GNU Radio applications themselves are generally known as \emph{flowgraphs}, which are a series of connected signal processing blocks, thus describing a data flow. These flowgraphs can be written in either C++ or the Python programming language. The GNU Radio infrastructure is written entirely in C++, and many of the user tools are written in Python. The framework is platform-independent, and its graphical interface is supported by the Qt library (which as bindings for several languages such as Python through PyQt) and the wxWidgets library (considered deprecated for GNU Radio development, so its use is discouraged).
+The applications are developed using the GNU Radio framework. GNU Radio is a free software development toolkit that provides signal processing blocks to implement software-defined radios and signal processing systems \cite{gnuradio_project}. It can be used with external RF hardware to create software-defined radios, or without hardware in a simulation-like environment. The GNU Radio applications consist of \emph{flowgraphs}, which are a series of connected signal processing blocks, thus describing a signal flow. The GNU Radio infrastructure is written entirely in C++, and many of the user tools are written in Python. Its graphical interface is supported by the Qt library (which as bindings for several languages such as Python through PyQt) and the wxWidgets library (considered deprecated for GNU Radio development, so its use is discouraged). GNU Radio runs mostly in GPP-based hardware although there are ongoing efforts to adapt the framework for FPGA and GPU-based platforms \cite{gr2020_program}.
 \autoref{fig:simple_gr_demo} shows a very simple example of a flowgraph where one can see several types of blocks, like \emph{Source} and \emph{Sink}. Also, \emph{Variable} and \emph{Options} blocks, which allow for a more flexible workflow. Note that it's possible to use Python expressions and variables in most blocks input fields. The \emph{Throttle} block is usually used when there is no hardware limiting the sample rate, and its purpose is to prevent GNU Radio consuming samples as fast as possible, thereby consuming all the CPU time. In \autoref{fig:simple_gr_demo_exec} the \emph{Time Sink} interface is displayed, when the flowgraph is running. The frequency can be changed in real-time.
 
 \begin{figure}[H]
@@ -79,10 +79,10 @@ The main specifications of a classic FM broadcast system are as follows \cite{fm
   \item Uses double-sideband suppressed-carrier (DSB-SC) modulation on the 38 kHz sub-carrier.
   \item Radio Data Services (RDS) is a communications protocol standard for embedding small amounts of digital information in conventional FM radio broadcasts. RDS standardizes several types of information transmitted, including time, station identification and program information. It uses BPSK digital modulation on the 57 kHz sub-carrier.
   \item 19 kHz pilot to assist in carrier recovery for Stereo and RDS demodulation.
-  \item Other services on higher sub-carriers were part of the American Subsidiary Communications Authority (SCA) services, including Microsoft DirectBand (shutdown in 2012). Use of SCAs was particularly popular in the US, but much less so elsewhere. Uses for such sub-carriers include radio reading services for the blind, which became common and remains so, private data transmission services (for example sending stock market information to stockbrokers or stolen credit card number blacklists to stores) and others.
+  \item Other services on higher sub-carriers are part of the American Subsidiary Communications Authority (SCA) services.
 \end{itemize}
 
-The (L+R) main channel signal is transmitted as baseband audio limited to the range of 30 Hz to 15 kHz. The (L-R) signal is amplitude modulated onto a DSB-SC 38 kHz signal occupying the baseband range of 23 to 53 kHz. A 19 kHz $\pm$2 Hz pilot tone, at exactly half the 38 kHz sub-carrier frequency and with a precise phase relationship to it, as defined by expression \eqref{eq:fm_signal_freq}, is also generated. This is transmitted at 8-10\% of overall modulation level and used by the receiver to identify a stereo transmission and to regenerate the 38 kHz sub-carrier with the correct phase. The final multiplex signal from the stereo generator contains the main channel (L+R), the pilot tone, and the sub-channel (L-R). This composite signal, along with any other sub-carriers, modulates the FM transmitter. The instantaneous deviation of the transmitter carrier frequency due to the stereo audio and pilot tone (at 10\% modulation) is given by \cite{fm_demod}:
+The (L+R) main channel signal is transmitted as baseband audio limited to the range of 30 Hz to 15 kHz. The (L-R) signal is amplitude modulated onto a DSB-SC 38 kHz signal occupying the baseband range of 23 to 53 kHz. A 19 kHz pilot tone is also generated, which is used by the receiver to identify a stereo transmission and to regenerate the 38 kHz sub-carrier with the correct phase (usually using a PLL with a divider in the feedback path). Note this phase relationship is essential to reduce cross-talk between mono and stereo channels. The final multiplexed signal modulates the FM transmitter, with the deviation of the transmitter carrier frequency due to the stereo audio and pilot tone (at 10\% modulation) given by \cite{fm_demod}:
 \begin{equation} \label{eq:fm_signal_freq}
   f_\Delta = \left(0.9\left(\frac{L+R}{2}+\frac{L-R}{2}\sin(4\pi f_p)\right)+0.1\sin(2\pi f_p)\right)\cdot 75 \text{ kHz}
 \end{equation}
@@ -218,15 +218,16 @@ The demodulator's instantaneous output frequency is
 \end{equation}
 where $f_s$ is the sampling frequency in Hz.
 
-Computing instantaneous phase $\theta(n)$, again, requires an arctangent operation, which could difficult to implement accurately without considerable computational resources. Only this time there is an alternative. Here's a scheme for computing $\Delta\theta(n)$ for use in expression \eqref{eq:digital_fm_demod}, without the intermediate $\theta(n)$ phase computation. The $\Delta\theta(n)$ computation algorithm is derived as follows, initially using continuous-time variables based on the following definitions:
+Computing instantaneous phase $\theta(n)$, again, requires an arctangent operation, which could difficult to implement accurately without considerable computational resources. Only this time there is an alternative. The following algorithm computes $\Delta\theta(n)$ for use in expression \eqref{eq:digital_fm_demod}, without the intermediate $\theta(n)$ phase computation. Given the following definitions:
 \begin{itemize}
   \item $i(t)$ = in-phase signal
   \item $q(t)$ = quadrature phase signal
+  \item $r(t)=q(t)/i(t)$
   \item $\theta(t) = tan^{-1}\left(\frac{q(t)}{i(t)}\right)$ = instantaneous phase
   \item $\Delta\theta(t)$ = time derivative of $\theta(t)$
 \end{itemize}
 
-First, let $r(t)=q(t)/i(t)$  be the signal for which derivative of its arctangent is meant to be calculated. The time derivative of $\tan^{-1}(r(t))$, a calculus identity, is
+The time derivative of $\tan^{-1}(r(t))$ is
 \begin{equation} \label{eq:fm_no_atan_1}
   \Delta\theta(t) = \diff{(\tan^{-1}(r(t)))}{t}=\frac{1}{1+r^2(t)}\diff{r(t)}{t}
 \end{equation}
@@ -241,7 +242,7 @@ Plugging \eqref{eq:fm_no_atan_2} result into \eqref{eq:fm_no_atan_1}, yields
   \Delta\theta(t) = \diff{(\tan^{-1}(r(t)))}{t}=\frac{1}{1+r^2(t)}\frac{i(t)\diff{q(t)}{t}-q(n)\diff{i(t)}{t}}{i^2(t)}
 \end{equation}
 
-Next, the numerator and denominator of the first ratio in \eqref{eq:fm_no_atan_3} are multiplied by $i^2(t)$, and finally the discrete time variable index $n$ replaces $t$, to arrive at the result of
+Finally, the numerator and denominator of the first ratio in \eqref{eq:fm_no_atan_3} are multiplied by $i^2(t)$, and the discrete time variable index $n$ replaces $t$, to arrive at the result of
 \begin{equation} \label{eq:fm_no_atan_4}
     \Delta\theta(n)= \frac{i(n)\diff{q(n)}{n}-q(n)\diff{i(n)}{n}}{i^2(n)+q^2(n)}
 \end{equation}
@@ -255,7 +256,7 @@ The implementation of this algorithm, where the derivatives of $i(n)$ and $q(n)$
   \label{fig:wbfm_no_atan}
 \end{figure}
 
-The $\Delta\theta(n)$ output sequence is used in \eqref{eq:digital_fm_demod} to compute instantaneous frequency. The Differentiator is a tapped-delay line FIR differentiating filter with an odd number of taps. The Delay elements are used to time-align $i(n)$ and $q(n)$ with the outputs of the differentiators such that the delay is $(K-1)/2$ samples when a K-tap differentiator is used. In practice, the delay can be obtained by tapping off the centre tap of the differentiating filter. If the signal  is purely FM and hard limited such that $i^2(n)+q^2(n)=k$, where k is constant, the denominator computations in \eqref{eq:fm_no_atan_4} need not be performed. In this case, using the [1, 0, -1] coefficient differentiators, the FM demodulator is simplified to that shown in \autoref{fig:wbfm_no_atan} b), where the scaling operation is multiplication by the reciprocal of $k$.
+The $\Delta\theta(n)$ output sequence is used in \eqref{eq:digital_fm_demod} to compute instantaneous frequency. The Differentiator is a FIR differentiating filter with an odd number of taps. The Delay elements are needed to time-align $i(n)$ and $q(n)$ with the outputs of the differentiators such that the delay is $(K-1)/2$ samples when a K-tap differentiator is used. A simplified version of this algorithm (shown in \autoref{fig:wbfm_no_atan} b)) can be used, if the signal is purely FM and hard limited such that $i^2(n)+q^2(n)=k$ (where k is constant), and using [1, 0, -1]-coefficient differentiators.
 
 The resulting spectrum from the demodulation is shown in \autoref{fig:fm_iq_capture_plot_demodulated}. The last step is to decimate once more to bring the signal into the sampling range of the audio card, while filtering everything above the mono channel. Using a decimation by 10 results in the spectrum shown in \autoref{fig:fm_iq_capture_plot_decimated10} with a final bandwidth of 31.25 kHz.
 

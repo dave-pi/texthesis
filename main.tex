@@ -1,0 +1,264 @@
+\documentclass[11pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[a4paper,width=150mm,top=25mm,bottom=25mm,marginparwidth=80pt]{geometry}
+
+\usepackage[style=numeric,backend=biber,sorting=none]{biblatex}
+% run 'biber --output_format=bibtex --output_resolve main.bcf' to remove duplicates and unused, format and sort
+\addbibresource{main_biber.bib}
+
+\usepackage{amsmath}
+\usepackage{siunitx}
+\sisetup{
+  round-mode      = places, % rounds numbers
+  round-precision = 2,      % to 2 places
+}
+
+% To prevent floats from floating too much...
+\usepackage{float}
+\usepackage{placeins}
+
+% For tables formatting
+\usepackage{array, booktabs, caption, makecell, multirow}
+\renewcommand\theadfont{\bfseries}
+
+\usepackage{graphicx}
+\graphicspath{ {images/}}
+
+\setlength{\headheight}{14pt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+% \fancyhead[RO,LE]{Software Defined Radio Transceiver}
+\fancyhead[R]{\ifnum \value{chapter}>0 \ifnum \value{chapter}<6 Library and Applications for DSP and SDR research\fi\fi}
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
+\fancyhead[L]{\ifnum \value{chapter}>0 \ifnum \value{chapter}<6 Chapter \thechapter\fi\fi}
+
+% For adjusting tables to text width
+\usepackage{adjustbox}
+
+% To correctly set vertical space between paragraphs
+\usepackage{parskip}
+\setlength{\parindent}{11pt}
+
+\usepackage{csquotes}
+\usepackage{todonotes}
+\usepackage{subcaption}
+\usepackage[thinc]{esdiff}
+
+% For some symbols like degree. Keep textcomp to avoid some warning about undefined \perthousand and \micro
+\usepackage{textcomp}
+\usepackage{gensymb}
+
+% For hyperlinks and PDF bookmarks
+\usepackage{hyperref}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{9} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{9}  % for normal
+
+% Custom colours
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% Link lists and bibliography in the TOC
+\usepackage[nottoc,notlof,notlot]{tocbibind}
+
+% Code listings
+\usepackage{listings}
+% \renewcommand{\lstlistingname}{List of Listings}
+% \renewcommand{\lstlistoflistings}{\begingroup
+% \tocfile{\lstlistingname}{lol}
+% \endgroup}
+\renewcommand{\lstlistlistingname}{List of Listings}
+
+% Rotating figures
+\usepackage{rotating}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+otherkeywords={self},
+keywordstyle=\ttb\color{deepblue},
+stringstyle=\color{deepgreen},
+frame=tb,
+showstringspaces=false
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% C++ style for highlighting
+\newcommand\cppstyle{\lstset{
+language=C++,
+basicstyle=\ttm,
+otherkeywords={self},
+keywordstyle=\ttb\color{deepblue},
+stringstyle=\color{deepgreen},
+frame=tb,
+showstringspaces=false
+}}
+
+% C++ environment
+\lstnewenvironment{cpp}[1][]
+{
+\cppstyle
+\lstset{#1}
+}
+{}
+
+% Bash style for highlighting
+\newcommand\bashstyle{\lstset{
+language=Bash,
+basicstyle=\ttm,
+otherkeywords={self},
+keywordstyle=\ttb\color{deepblue},
+stringstyle=\color{deepgreen},
+frame=tb,
+showstringspaces=false
+}}
+
+% Bash environment
+\lstnewenvironment{bash}[1][]
+{
+\bashstyle
+\lstset{#1}
+}
+{}
+
+% For block diagrams
+\usepackage{tikz}
+\usetikzlibrary{dsp,chains}
+\usetikzlibrary {circuits.ee.IEC}
+\usetikzlibrary {chains,matrix,fit,scopes,shapes.geometric,positioning}
+
+% Command to define monospace font for code
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Make Acknowledgements and Dedication the same format as Abstract
+\newenvironment{acknowledgments}{\renewcommand\abstractname{Acknowledgments}\begin{abstract}}{\end{abstract}}
+\newenvironment{dedication}{\renewcommand\abstractname{}\begin{abstract}}{\end{abstract}}
+
+% \title{
+%     {Software Defined Radio Transceiver}\\
+%     {\large Instituto Superior de Engenharia de Lisboa}}
+% \author{David Pinho}
+% \date{31 July 2020}
+% \let\runauthor\@author
+% \let\runtitle\@title
+
+% \defbibheading{bibintoc}[\refname]{\section*{#1}\markboth{}{}}
+% \usepackage{draftwatermark}
+% \SetWatermarkText{For Jury Evaluation}
+% \SetWatermarkScale{0.4}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\textwidth]{logo_isel}
+  \label{fig:logo_isel}
+\end{figure}
+\begin{center}
+  \vspace*{1cm}
+  \LARGE
+  INSTITUTO SUPERIOR DE ENGENHARIA DE LISBOA\\
+  \Large
+  Departamento de Engenharia Eletrónica, Telecomunicações e Computadores
+  \par\noindent\rule{0.5\textwidth}{1pt}\par
+
+  \vspace{1cm}
+  \LARGE
+  LIBRARY AND APPLICATIONS FOR DSP AND SDR RESEARCH
+
+  \vspace{0.75cm}
+  \normalsize
+  Author:\\
+  David Pinho
+
+  \vspace{0.5cm}
+  Supervision:\\
+  Prof. André Lourenço\\
+  Prof. José Nascimento
+
+  \vspace{1.0cm}
+  Jury:\\
+  Prof. António Serrador\\
+  Prof. Paulo Marques\\
+  Prof. José Nascimento
+  \vfill
+  \par\noindent\rule{0.5\textwidth}{1pt}\par
+  A thesis submitted for the degree of
+
+  \emph{M.Sc. Electronics and Telecommunications Engineering}
+
+  July 31, 2020
+
+\end{center}
+\end{titlepage}
+
+\newpage\null\thispagestyle{empty}\newpage
+
+\begin{dedication}
+\begin{flushright}
+\null\vspace{\stretch{1}}
+\emph{To Teresa, Eva and Gabriel}
+\vspace{\stretch{2}}\null
+\end{flushright}
+\end{dedication}
+
+\newpage\null\thispagestyle{empty}\newpage
+
+\begin{abstract}
+The increasing number of connected devices and wireless protocols poses several challenges and is calling for new ways to design and implement radio systems. Technological advances in analogue-to/from-digital converters and computing power has made software-defined radio (SDR) a popular architecture. I propose an initial implementation of a library for SDR research, targeted at fellow students and digital signal processing (DSP)/SDR practitioners. The SKSDR library is developed in Python due to its well established usage in the scientific community and large body of supporting libraries and documentation. The library includes an initial implementation of several algorithms for various stages of the transmitter and receiver chains, such as modulators, matched filtering, synchronization blocks, among others.
+On top of the library, and as demonstration purposes, I propose two applications based on GNU Radio. GNU Radio is a free and open-source graphical programming environment that can be used to design software-defined radios using a large panel of signal-processing blocks. The first application is a wideband frequency modulation (WBFM) receiver, based on an alternative algorithm, than the one already existing in the GNU Radio system. The second application is a complete PSK transceiver that works both in simulated environment and with physical hardware, real-time requirements. This is aimed at demonstrating the challenges posed by physical implementation, like real channel impairments, which sometimes are difficult to capture in simulation environment. GNU Radio will be used mostly as wrapping logic, with the main goal being full re-use of the algorithms developed for the SKSDR library. A HackRF One and RTL-SDR devices will be used as the radio front ends, for transmitter and receiver respectively.
+\end{abstract}
+
+\begin{acknowledgments}
+This thesis project has been supported by the Instituto Superior de Engenharia de Lisboa. I would like to thank my advisers Prof. André Lourenço and Prof. José Nascimento for their continuous support and feedback, without which, this thesis would not have been possible.
+\end{acknowledgments}
+
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+\chapter{Introduction}
+\label{chap:introduction}
+\input{chapters/introduction}
+
+\chapter{Conceptual Overview}
+\label{chap:conceptual_overview}
+\input{chapters/chapter02}
+
+\chapter{Science Kit SDR (SKSDR) Library}
+\label{chap:sksdr_lib}
+\input{chapters/chapter03}
+
+\chapter{Demonstration Applications}
+\label{chap:demo_apps}
+\input{chapters/chapter04}
+
+\chapter{Conclusions}
+\label{chap:conclusions}
+\input{chapters/conclusions}
+
+% \appendix
+% \chapter{Appendix Title}
+% \input{chapters/appendix}
+\printbibliography[heading=bibintoc]
+
+\end{document}

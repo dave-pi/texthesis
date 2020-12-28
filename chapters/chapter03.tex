@@ -1269,7 +1269,6 @@ Descrambled bits: array([
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Forward Error Correcting Algorithms}
 Forward error correction (FEC) is a technique used for detecting and possibly correcting errors in data transmission over unreliable communication channels \cite{wikipedia_fec}. This is achieved by adding redundant information to the message, that is then used by the receiver in the error detection process. FEC allows the receiver correct errors without needing to request re-transmission of data, but at the cost of a higher channel bandwidth. This is specially useful for systems in which re-transmissions are not viable due to latency issues for example.
-The maximum proportion of errors or missing bits that can be corrected is determined by the design of the ECC, so different forward error correcting codes are suitable for different conditions.
 
 \subsection{Hamming(7,4) Code}
 
@@ -1281,7 +1280,7 @@ The Hamming(7,4) was developed in the SKSDR library as way of demonstration and 
   \item \code{ndata}: The number of data bits (currently fixed as 4)
 \end{itemize}
 
-Hamming(7,4) is a linear error-correcting code that encodes four bits of data into seven bits by adding three parity bits \cite{wikipedia_hamming}. The algorithm can correct any single-bit error, or detect all single-bit and two-bit errors. Because Hamming codes are linear codes, they can be computed efficiently using matrices. Two Hamming matrices can be defined, the code \emph{generator matrix} G and the \emph{parity-check matrix} H:
+Hamming(7,4) is a linear error-correcting code that encodes four bits of data into seven bits by adding three parity bits \cite{wikipedia_hamming}. The algorithm can correct any single-bit error, or detect all single-bit and two-bit errors. Because Hamming codes are linear codes, they can be computed efficiently using matrix algebra. Two Hamming matrices can be defined, the code \emph{generator matrix} G and the \emph{parity-check matrix} H:
 \begin{equation}
 \mathbf{G^T} := \begin{pmatrix}
   1 & 1 & 0 & 1 \\
